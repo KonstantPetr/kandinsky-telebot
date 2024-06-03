@@ -102,7 +102,6 @@ def process_image(message, prev_msg_id):
         prompt = base_prompt
     enhance_history_logger(base_prompt, prompt)
     result_image_path = api_t2i.get_image(prompt=prompt, width=resolution[0], height=resolution[1], style=style)
-    logger = Logger()
     bot.delete_message(message.chat.id, msg.id)
     if not result_image_path:
         data = generate_data(message.from_user.id, message.from_user.username, 'timeout')
@@ -119,7 +118,8 @@ def process_image(message, prev_msg_id):
                 message_thread_id=message.message_thread_id,
                 photo=result_image,
                 caption=f'"{base_prompt}" по заказу @{message.from_user.username} в стиле {style} (режим {enhance})')
-    logger.log(data)
+    with Logger() as logger:
+        logger.log(data)
 
 
 @bot.message_handler(commands=['help'])

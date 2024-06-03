@@ -3,10 +3,14 @@ import sqlite3
 
 class Logger:
     def __init__(self, db_name='logs/log.db'):
-        self.con = sqlite3.connect(db_name)
-        self.executor = self.con.cursor()
+        self.db_name = db_name
 
-    def __del__(self):
+    def __enter__(self):
+        self.con = sqlite3.connect(self.db_name)
+        self.executor = self.con.cursor()
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
         self.con.commit()
         self.con.close()
 
